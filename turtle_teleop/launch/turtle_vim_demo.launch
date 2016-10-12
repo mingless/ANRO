@@ -1,0 +1,15 @@
+<launch>
+  <!-- Args -->
+  <arg name="topic" default="turtle_demo"/>
+
+  <!-- Turtlesim Node-->
+  <node pkg="turtlesim" type="turtlesim_node" name="$(arg topic)"/>
+
+  <!-- Demo Node -->
+  <!-- name of the turtlesim node should be same as topicname value below -->
+  <node pkg="turtle_teleop" type="turtle_teleop.py" name="turtle_teleop" output="screen">
+    <param name="turtle_topicname" type="string" value="$(arg topic)"/>
+  </node>
+
+</launch>
+
