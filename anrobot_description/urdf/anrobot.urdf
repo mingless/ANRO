@@ -1,0 +1,27 @@
+<robot name="test_robot">
+  <link name="base_link" />
+  <link name="link1" />
+  <link name="link2" />
+  <link name="link3" />
+
+  <joint name="joint1" type="continuous">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <origin xyz="1.84791 0.764999 0" rpy="0 0 0.3925" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <joint name="joint2" type="continuous">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0.50046 0.86576 0" rpy="0.50046 0.86576 0" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <joint name="joint3" type="continuous">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0 0 1" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+  </joint>
+</robot>
