@@ -4,15 +4,22 @@
 #include <kdl/tree.hpp>
 #include <kdl/chain.hpp>
 #include <math.h>
+#include <stdlib.h>
 
-int main(){
-	KDL::Chain chain;
+int main(int argc,char *argv[]){
+	KDL::Chain chain;	
 	double pi = M_PI;
-	double a1 = 2;
-	double a2 = 1;
-	double theta1 = pi/3;
-	double theta2 = pi/8;
-	double d3 = 2;
+	double a1 = 2, a2 = 1, theta1, theta2, d3;
+	if(argc == 4) {
+		theta1 =  strtol(argv[1], NULL, 10);
+		theta2 = strtol(argv[2], NULL, 10);
+		d3 = strtol(argv[3], NULL, 10);
+	}
+	else {
+		theta1 = pi/3;
+		theta2 = pi/8;
+		d3 = 2;
+	}
 
 	chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(a1, 0, 0, theta1)));
 	chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(a2, pi, 0, theta2)));
