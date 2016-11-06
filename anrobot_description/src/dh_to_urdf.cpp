@@ -3,17 +3,19 @@
 #include <kdl/kdl.hpp>
 #include <kdl/tree.hpp>
 #include <kdl/chain.hpp>
+#include <math.h>
 
 int main(){
 	KDL::Chain chain;
+	double pi = M_PI;
 	double a1 = 2;
 	double a2 = 1;
-	double theta1 = 3.14/8;
-	double theta2 = 3.14/3;
-	double d3 = 1;
+	double theta1 = pi/3;
+	double theta2 = pi/8;
+	double d3 = 2;
 
 	chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(a1, 0, 0, theta1)));
-	chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(a2, 3.14, 0, theta2)));
+	chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(a2, pi, 0, theta2)));
 	chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ),KDL::Frame::DH(0, 0, d3, 0)));
 
 	double joint[3], tip[3];
