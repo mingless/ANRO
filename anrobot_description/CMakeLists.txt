@@ -5,12 +5,14 @@ project(anrobot_description)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  geometry_msgs
   kdl_conversions
   kdl_parser
   roscpp
   rospy
   sensor_msgs
   std_msgs
+  std_srvs
   tf
   urdf
 )
@@ -56,11 +58,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  FwdKinematics.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -70,10 +71,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   sensor_msgs#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs geometry_msgs std_srvs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -107,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES anrobot_description
-#  CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs tf urdf
+ CATKIN_DEPENDS roscpp rospy geometry_msgs message_runtime sensor_msgs std_msgs std_srvs tf urdf
 #  DEPENDS system_lib
 )
 
@@ -118,7 +119,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
+include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -133,16 +134,20 @@ include_directories(
 # add_dependencies(anrobot_description ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(dh_to_urdf src/dh_to_urdf.cpp)
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(anrobot_description_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
+add_executable(dh_to_urdf src/dh_to_urdf.cpp
+)
 target_link_libraries(dh_to_urdf
   ${catkin_LIBRARIES}
 )
+
+add_executable(simple_fwd_kinematics src/simple_fwd_kinematics.cpp
+)
+target_link_libraries(simple_fwd_kinematics
+  ${catkin_LIBRARIES}
+)
+## Add cmake target dependencies of the executable
+## same as for the library above
+# add_dependencies(anrobot_description_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##
@@ -159,11 +164,9 @@ target_link_libraries(dh_to_urdf
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS anrobot_description anrobot_description_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS dh_to_urdf simple_fwd_kinematics
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/
