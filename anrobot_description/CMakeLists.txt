@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
   tf
   urdf
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -140,7 +141,17 @@ target_link_libraries(dh_to_urdf
   ${catkin_LIBRARIES}
 )
 
+add_executable(kdl_fwd_kinematics src/kdl_fwd_kinematics.cpp
+)
+add_dependencies(kdl_fwd_kinematics FwdKinematics
+)
+target_link_libraries(kdl_fwd_kinematics
+  ${catkin_LIBRARIES}
+)
+
 add_executable(simple_fwd_kinematics src/simple_fwd_kinematics.cpp
+)
+add_dependencies(simple_fwd_kinematics FwdKinematics
 )
 target_link_libraries(simple_fwd_kinematics
   ${catkin_LIBRARIES}
@@ -164,7 +175,7 @@ target_link_libraries(simple_fwd_kinematics
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS dh_to_urdf simple_fwd_kinematics
+install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
