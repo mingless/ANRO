@@ -1,5 +1,7 @@
 float64 theta1
 float64 theta2
 float64 d3
+bool use_kdl
 ---
+bool success
 geometry_msgs/Pose end_pose

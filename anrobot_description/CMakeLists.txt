@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  visualization_msgs
   std_srvs
   tf
   urdf
@@ -109,7 +110,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES anrobot_description
- CATKIN_DEPENDS roscpp rospy geometry_msgs message_runtime sensor_msgs std_msgs std_srvs tf urdf
+ CATKIN_DEPENDS roscpp rospy geometry_msgs message_runtime sensor_msgs std_msgs std_srvs tf urdf visualization_msgs
 #  DEPENDS system_lib
 )
 
@@ -143,17 +144,19 @@ target_link_libraries(dh_to_urdf
 
 add_executable(kdl_fwd_kinematics src/kdl_fwd_kinematics.cpp
 )
-add_dependencies(kdl_fwd_kinematics FwdKinematics
-)
 target_link_libraries(kdl_fwd_kinematics
   ${catkin_LIBRARIES}
 )
 
 add_executable(simple_fwd_kinematics src/simple_fwd_kinematics.cpp
 )
-add_dependencies(simple_fwd_kinematics FwdKinematics
-)
 target_link_libraries(simple_fwd_kinematics
+  ${catkin_LIBRARIES}
+)
+
+add_executable(set_param src/set_param.cpp
+)
+target_link_libraries(set_param
   ${catkin_LIBRARIES}
 )
 ## Add cmake target dependencies of the executable
@@ -175,7 +178,7 @@ target_link_libraries(simple_fwd_kinematics
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics
+install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
