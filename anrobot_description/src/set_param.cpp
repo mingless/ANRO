@@ -71,7 +71,7 @@ void joint_states_cb(const sensor_msgs::JointStateConstPtr &msg, KinStruct k)
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "set_param_client");
+    ros::init(argc, argv, "set_param");
     if(argc != 2)
     {
         ROS_ERROR_STREAM("Usage:  rosrun anrobot_description set_param arg" << "\n"
