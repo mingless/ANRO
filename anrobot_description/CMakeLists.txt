@@ -196,6 +196,18 @@ install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
 
+install(
+  DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  FILES_MATCHING PATTERN "*.launch"
+)
+
+install(
+  DIRECTORY urdf
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  FILES_MATCHING PATTERN "*.urdf"
+)
+
 #############
 ## Testing ##
 #############

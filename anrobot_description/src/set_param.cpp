@@ -13,6 +13,7 @@ int main(int argc, char** argv)
     }
 
     ros::NodeHandle n;
+    ros::Rate r(1);
 
     ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
     ros::Publisher joint_states = n.advertise<sensor_msgs::JointState>("set_joint_states", 1);
@@ -77,6 +78,7 @@ int main(int argc, char** argv)
 
         marker_pub.publish(marker);
 
+        r.sleep();
     }
 
     return 0;

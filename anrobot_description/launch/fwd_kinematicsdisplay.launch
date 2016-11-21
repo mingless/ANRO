@@ -5,6 +5,8 @@
         <param name="use_gui" value="$(arg gui)"/>
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+        <node name="simple_fwd" pkg="anrobot_description" type="simple_fwd_kinematics" />
+        <node name="kdl_fwd" pkg="anrobot_description" type="kdl_fwd_kinematics" />
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot_description)/urdf.rviz" required="true" />
 </launch>
 
