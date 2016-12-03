@@ -142,6 +142,12 @@ target_link_libraries(dh_to_urdf
   ${catkin_LIBRARIES}
 )
 
+add_executable(gen_trajectory src/gen_trajectory.cpp
+)
+target_link_libraries(gen_trajectory
+  ${catkin_LIBRARIES}
+)
+
 add_executable(kdl_fwd_kinematics src/kdl_fwd_kinematics.cpp
 )
 target_link_libraries(kdl_fwd_kinematics
@@ -178,7 +184,7 @@ target_link_libraries(set_param
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param
+install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
