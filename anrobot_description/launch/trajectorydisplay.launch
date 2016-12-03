@@ -6,7 +6,8 @@
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
 		<rosparam param="source_list">["trajectory_joint_states"]</rosparam>
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+	<node name="gen_trajectory" pkg="anrobot_description" type="gen_trajectory" />
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot_description)/urdf.rviz" required="true" />
-	<!-- also do $rosrun anrobot_description gen_trajectory <params> -->
+
 </launch>
 
