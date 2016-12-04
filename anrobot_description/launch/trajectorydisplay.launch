@@ -1,12 +1,13 @@
 <launch>
         <arg name="model" default='$(find anrobot_description)/urdf/movable.urdf' />
-        <arg name="gui" default="False" />
+        <arg name="gui" default="True" />
         <param name="robot_description" textfile="$(arg model)" />
         <param name="use_gui" value="$(arg gui)"/>
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-		<rosparam param="source_list">["trajectory_joint_states"]</rosparam>
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-	<node name="gen_trajectory" pkg="anrobot_description" type="gen_trajectory" />
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
+            <remap from="joint_states" to="trajectory_joint_states" />
+        </node>
+        <node name="gen_trajectory" pkg="anrobot_description" type="gen_trajectory" />
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot_description)/urdf.rviz" required="true" />
 
 </launch>
