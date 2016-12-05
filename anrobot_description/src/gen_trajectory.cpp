@@ -13,7 +13,8 @@ class Trajectory
 
     public:
         int msg_amount;
-        bool is_init = 0;
+        bool is_init;
+        bool is_lin;
         int inc; //number of passed increments in current timer cycle
         Trajectory(ros::Publisher* pub);
         ros::Publisher* pub_ptr;
@@ -26,6 +27,7 @@ class Trajectory
         void init_lin(sensor_msgs::JointStateConstPtr msg);
         void init_nonlin(sensor_msgs::JointStateConstPtr msg);
 
+        void next_step(const ros::TimerEvent& event);
         void next_step_lin(const ros::TimerEvent& event);
         void next_step_nonlin(const ros::TimerEvent& event);
 
@@ -45,6 +47,14 @@ Trajectory::Trajectory(ros::Publisher* pub)
 {
     pub_ptr = pub;
     is_init = 0;
+}
+
+void Trajectory::next_step(const ros::TimerEvent& event)
+{
+    if(is_lin)
+        this->next_step_lin(event);
+    else
+        this->next_step_nonlin(event);
 }
 
 void Trajectory::next_step_lin(const ros::TimerEvent& event)
@@ -129,12 +139,21 @@ void target_states_cb(const sensor_msgs::JointStateConstPtr &msg, ros::Timer *ti
     }
     if (t->compare_target(msg))
     {
-        t->init_nonlin(msg);
+        if (t->is_lin)
+        {
+            t->init_lin(msg);
+        }
+        else
+        {
+            t->init_nonlin(msg);
+        }
         timer->start();
     }
     else
+    {
         t->current.header.stamp = ros::Time::now();
-    t->pub_ptr->publish(t->current);
+        t->pub_ptr->publish(t->current);
+    }
 }
 
 bool Trajectory::compare_target(sensor_msgs::JointStateConstPtr input)
@@ -160,12 +179,14 @@ int main(int argc, char **argv)
     ros::Publisher trajectory_pub = n.advertise<sensor_msgs::JointState>("trajectory_joint_states", 1);
 
     Trajectory t(&trajectory_pub);
-    ros::Timer timer = n.createTimer(ros::Duration(4./200), &Trajectory::next_step_nonlin, &t, false, false);
+    n.param("is_trajectory_linear", t.is_lin, true);
+    ros::Timer timer = n.createTimer(ros::Duration(4./200), &Trajectory::next_step, &t, false, false);
 
     ros::Subscriber get_target_state = n.subscribe<sensor_msgs::JointState>("joint_states", 100, boost::bind(target_states_cb, _1, &timer, &t));
 
     while(ros::ok())
     {
+        n.param("is_trajectory_linear", t.is_lin, true);
         if(t.inc > t.msg_amount) timer.stop();
         ros::spinOnce();
     }
