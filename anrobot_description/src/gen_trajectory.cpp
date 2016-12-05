@@ -10,48 +10,40 @@ class Trajectory
     private:
         sensor_msgs::JointState initial, target;
         double delta[3], accel[3];
-        void init();
 
     public:
         int msg_amount;
+	bool is_init = 0;
         int inc; //number of passed increments in current timer cycle
         Trajectory(ros::Publisher* pub);
         ros::Publisher* pub_ptr;
         sensor_msgs::JointState current;
 
+        void init(sensor_msgs::JointStateConstPtr msg);
+        void set_target(sensor_msgs::JointStateConstPtr target);
         bool compare_target(sensor_msgs::JointStateConstPtr input);
+
         void init_lin(sensor_msgs::JointStateConstPtr msg);
         void init_nonlin(sensor_msgs::JointStateConstPtr msg);
-        void next_step_lin(const ros::TimerEvent& event);
+        
+	void next_step_lin(const ros::TimerEvent& event);
         void next_step_nonlin(const ros::TimerEvent& event);
-        void set_target(sensor_msgs::JointStateConstPtr target);
 
 };
 
-void Trajectory::init()
+void Trajectory::init(sensor_msgs::JointStateConstPtr msg)
 {
     msg_amount = 300;
     inc = 0;
-    current.position.push_back(0);
-    current.position.push_back(0);
-    current.position.push_back(1.65);
-    current.velocity.push_back(0);
-    current.velocity.push_back(0);
-    current.velocity.push_back(0);
-    current.effort.push_back(0);
-    current.effort.push_back(0);
-    current.effort.push_back(0);
-    current.name.push_back("joint1");
-    current.name.push_back("joint2");
-    current.name.push_back("joint3");
+    current = *msg;
     initial = current;
     target = current;
 }
 
 Trajectory::Trajectory(ros::Publisher* pub)
 {
-    init();
     pub_ptr = pub;
+    is_init = 0;
 }
 
 void Trajectory::next_step_lin(const ros::TimerEvent& event)
@@ -126,11 +118,14 @@ void Trajectory::init_nonlin(sensor_msgs::JointStateConstPtr msg)
         delta[i] = 0;
         accel[i] = 9*(target.position[i]-initial.position[i])/(2*msg_amount*msg_amount);
     }
-    ROS_WARN_STREAM("init_nonlin" << accel[0] <<" "<<accel[1]<<" "<<accel[2]<<" " << std::endl);
 }
 
 void target_states_cb(const sensor_msgs::JointStateConstPtr &msg, ros::Timer *timer, Trajectory *t)
 {
+    if (!t->is_init)
+    {
+        t->init(msg);
+    }
     if (t->compare_target(msg))
     {
         t->init_nonlin(msg);
