@@ -13,7 +13,7 @@ class Trajectory
 
     public:
         int msg_amount;
-	bool is_init = 0;
+        bool is_init = 0;
         int inc; //number of passed increments in current timer cycle
         Trajectory(ros::Publisher* pub);
         ros::Publisher* pub_ptr;
@@ -25,8 +25,8 @@ class Trajectory
 
         void init_lin(sensor_msgs::JointStateConstPtr msg);
         void init_nonlin(sensor_msgs::JointStateConstPtr msg);
-        
-	void next_step_lin(const ros::TimerEvent& event);
+
+        void next_step_lin(const ros::TimerEvent& event);
         void next_step_nonlin(const ros::TimerEvent& event);
 
 };
@@ -35,6 +35,7 @@ void Trajectory::init(sensor_msgs::JointStateConstPtr msg)
 {
     msg_amount = 300;
     inc = 0;
+    is_init = 1;
     current = *msg;
     initial = current;
     target = current;
@@ -133,7 +134,7 @@ void target_states_cb(const sensor_msgs::JointStateConstPtr &msg, ros::Timer *ti
     }
     else
         t->current.header.stamp = ros::Time::now();
-        t->pub_ptr->publish(t->current);
+    t->pub_ptr->publish(t->current);
 }
 
 bool Trajectory::compare_target(sensor_msgs::JointStateConstPtr input)
