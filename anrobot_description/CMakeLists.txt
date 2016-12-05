@@ -61,9 +61,10 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate services in the 'srv' folder
 add_service_files(
-    FILES
-    FwdKinematics.srv
-    )
+  FILES
+  FwdKinematics.srv
+  InvKinematics.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -74,9 +75,9 @@ add_service_files(
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-    DEPENDENCIES
-    std_msgs geometry_msgs std_srvs
-    )
+  DEPENDENCIES
+  std_msgs geometry_msgs sensor_msgs std_srvs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -167,6 +168,13 @@ add_executable(set_param src/set_param.cpp
 target_link_libraries(set_param
     ${LIBS}
     )
+
+add_executable(inv_kinematics src/inv_kinematics.cpp
+)
+target_link_libraries(inv_kinematics
+    ${LIBS}
+)
+
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(anrobot_description_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -186,9 +194,9 @@ target_link_libraries(set_param
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-    )
+install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory inv_kinematics
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/
