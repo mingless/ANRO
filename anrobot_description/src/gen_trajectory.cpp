@@ -8,9 +8,8 @@ using namespace std;
 class Trajectory
 {
     private:
-        int time;
         sensor_msgs::JointState initial, target;
-        double lin_delta_0, lin_delta_1, lin_delta_2;
+        double delta[3], accel[3];
         void init();
 
     public:
@@ -22,15 +21,16 @@ class Trajectory
 
         bool compare_target(sensor_msgs::JointStateConstPtr input);
         void init_lin(sensor_msgs::JointStateConstPtr msg);
+        void init_nonlin(sensor_msgs::JointStateConstPtr msg);
         void next_step_lin(const ros::TimerEvent& event);
+        void next_step_nonlin(const ros::TimerEvent& event);
         void set_target(sensor_msgs::JointStateConstPtr target);
 
 };
 
 void Trajectory::init()
 {
-    time = 10;
-    msg_amount = 200;
+    msg_amount = 300;
     inc = 0;
     current.position.push_back(0);
     current.position.push_back(0);
@@ -58,9 +58,43 @@ void Trajectory::next_step_lin(const ros::TimerEvent& event)
 {
     if (++inc < msg_amount)
     {
-        current.position[0] += lin_delta_0;
-        current.position[1] += lin_delta_1;
-        current.position[2] += lin_delta_2;
+        current.position[0] += delta[0];
+        current.position[1] += delta[1];
+        current.position[2] += delta[2];
+    }
+
+    current.header.stamp = ros::Time::now();
+    pub_ptr->publish(current);
+}
+
+void Trajectory::next_step_nonlin(const ros::TimerEvent& event)
+{
+    ++inc;
+
+    if (inc < msg_amount/3)
+    {
+        for(int i = 0; i < 3; ++i)
+        {
+            delta[i] += accel[i];
+            current.position[i] += delta[i];
+        }
+    }
+
+    if (inc >= msg_amount/3 && inc < msg_amount*2/3)
+    {
+        for(int i = 0; i < 3; ++i)
+        {
+            current.position[i] += delta[i];
+        }
+    }
+
+    if (inc >= msg_amount*2/3 && inc < msg_amount)
+    {
+        for(int i = 0; i < 3; ++i)
+        {
+            delta[i] -= accel[i];
+            current.position[i] += delta[i];
+        }
     }
 
     current.header.stamp = ros::Time::now();
@@ -77,16 +111,29 @@ void Trajectory::init_lin(sensor_msgs::JointStateConstPtr msg)
     inc = 0;
     initial = current;
     set_target(msg);
-    lin_delta_0 = (target.position[0]-initial.position[0])/msg_amount;
-    lin_delta_1 = (target.position[1]-initial.position[1])/msg_amount;
-    lin_delta_2 = (target.position[2]-initial.position[2])/msg_amount;
+    delta[0] = (target.position[0]-initial.position[0])/msg_amount;
+    delta[1] = (target.position[1]-initial.position[1])/msg_amount;
+    delta[2] = (target.position[2]-initial.position[2])/msg_amount;
+}
+
+void Trajectory::init_nonlin(sensor_msgs::JointStateConstPtr msg)
+{
+    inc = 0;
+    initial = current;
+    set_target(msg);
+    for (int i = 0; i <3; ++i)
+    {
+        delta[i] = 0;
+        accel[i] = 9*(target.position[i]-initial.position[i])/(2*msg_amount*msg_amount);
+    }
+    ROS_WARN_STREAM("init_nonlin" << accel[0] <<" "<<accel[1]<<" "<<accel[2]<<" " << std::endl);
 }
 
 void target_states_cb(const sensor_msgs::JointStateConstPtr &msg, ros::Timer *timer, Trajectory *t)
 {
     if (t->compare_target(msg))
     {
-        t->init_lin(msg);
+        t->init_nonlin(msg);
         timer->start();
     }
     else
@@ -117,7 +164,7 @@ int main(int argc, char **argv)
     ros::Publisher trajectory_pub = n.advertise<sensor_msgs::JointState>("trajectory_joint_states", 1);
 
     Trajectory t(&trajectory_pub);
-    ros::Timer timer = n.createTimer(ros::Duration(4./200), &Trajectory::next_step_lin, &t, false, false);
+    ros::Timer timer = n.createTimer(ros::Duration(4./200), &Trajectory::next_step_nonlin, &t, false, false);
 
     ros::Subscriber get_target_state = n.subscribe<sensor_msgs::JointState>("joint_states", 100, boost::bind(target_states_cb, _1, &timer, &t));
 
