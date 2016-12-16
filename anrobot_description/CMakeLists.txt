@@ -156,12 +156,14 @@ add_executable(kdl_fwd_kinematics src/kdl_fwd_kinematics.cpp
 target_link_libraries(kdl_fwd_kinematics
     ${LIBS}
     )
+add_dependencies(kdl_fwd_kinematics ${anrobot_description_EXPORTED_TARGETS})
 
 add_executable(simple_fwd_kinematics src/simple_fwd_kinematics.cpp
     )
 target_link_libraries(simple_fwd_kinematics
     ${LIBS}
     )
+add_dependencies(simple_fwd_kinematics  ${anrobot_description_EXPORTED_TARGETS})
 
 add_executable(set_param src/set_param.cpp
     )
@@ -174,6 +176,7 @@ add_executable(inv_kinematics src/inv_kinematics.cpp
 target_link_libraries(inv_kinematics
     ${LIBS}
 )
+add_dependencies(inv_kinematics ${anrobot_description_EXPORTED_TARGETS})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
