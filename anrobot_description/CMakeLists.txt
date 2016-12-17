@@ -5,19 +5,19 @@ project(anrobot_description)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  geometry_msgs
-  kdl_conversions
-  kdl_parser
-  roscpp
-  rospy
-  sensor_msgs
-  std_msgs
-  visualization_msgs
-  std_srvs
-  tf
-  urdf
-  message_generation
-)
+    geometry_msgs
+    kdl_conversions
+    kdl_parser
+    roscpp
+    rospy
+    sensor_msgs
+    std_msgs
+    visualization_msgs
+    std_srvs
+    tf
+    urdf
+    message_generation
+    )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -61,9 +61,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate services in the 'srv' folder
 add_service_files(
-  FILES
-  FwdKinematics.srv
-)
+    FILES
+    FwdKinematics.srv
+    )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -74,9 +74,9 @@ add_service_files(
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-  DEPENDENCIES
-  std_msgs geometry_msgs std_srvs
-)
+    DEPENDENCIES
+    std_msgs geometry_msgs std_srvs
+    )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -108,11 +108,11 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES anrobot_description
- CATKIN_DEPENDS roscpp rospy geometry_msgs message_runtime sensor_msgs std_msgs std_srvs tf urdf visualization_msgs
-#  DEPENDS system_lib
-)
+    #  INCLUDE_DIRS include
+    #  LIBRARIES anrobot_description
+    CATKIN_DEPENDS roscpp rospy geometry_msgs message_runtime sensor_msgs std_msgs std_srvs tf urdf visualization_msgs
+    #  DEPENDS system_lib
+    )
 
 ###########
 ## Build ##
@@ -122,13 +122,15 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(include
-  ${catkin_INCLUDE_DIRS}
-)
+    ${catkin_INCLUDE_DIRS}
+    )
 
 ## Declare a C++ library
-# add_library(anrobot_description
-#   src/${PROJECT_NAME}/anrobot_description.cpp
-# )
+add_library(trajectory
+    src/trajectory.cpp
+    )
+
+set(LIBS ${catkin_LIBRARIES} trajectory)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -137,34 +139,34 @@ include_directories(include
 
 ## Declare a C++ executable
 add_executable(dh_to_urdf src/dh_to_urdf.cpp
-)
+    )
 target_link_libraries(dh_to_urdf
-  ${catkin_LIBRARIES}
-)
+    ${LIBS}
+    )
 
 add_executable(gen_trajectory src/gen_trajectory.cpp
-)
+    )
 target_link_libraries(gen_trajectory
-  ${catkin_LIBRARIES}
-)
+    ${LIBS}
+    )
 
 add_executable(kdl_fwd_kinematics src/kdl_fwd_kinematics.cpp
-)
+    )
 target_link_libraries(kdl_fwd_kinematics
-  ${catkin_LIBRARIES}
-)
+    ${LIBS}
+    )
 
 add_executable(simple_fwd_kinematics src/simple_fwd_kinematics.cpp
-)
+    )
 target_link_libraries(simple_fwd_kinematics
-  ${catkin_LIBRARIES}
-)
+    ${LIBS}
+    )
 
 add_executable(set_param src/set_param.cpp
-)
+    )
 target_link_libraries(set_param
-  ${catkin_LIBRARIES}
-)
+    ${LIBS}
+    )
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(anrobot_description_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -185,8 +187,8 @@ target_link_libraries(set_param
 
 ## Mark executables and/or libraries for installation
 install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    )
 
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/
@@ -203,16 +205,16 @@ install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param ge
 # )
 
 install(
-  DIRECTORY launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  FILES_MATCHING PATTERN "*.launch"
-)
+    DIRECTORY launch
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    FILES_MATCHING PATTERN "*.launch"
+    )
 
 install(
-  DIRECTORY urdf
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  FILES_MATCHING PATTERN "*.urdf"
-)
+    DIRECTORY urdf
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    FILES_MATCHING PATTERN "*.urdf"
+    )
 
 #############
 ## Testing ##
