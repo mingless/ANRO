@@ -2,10 +2,16 @@
 
 using namespace std;
 
-Trajectory::Trajectory(ros::NodeHandle* n, ros::Publisher* pub) {
-    pub_ptr = pub;
+Trajectory::Trajectory() {
     _is_init = 0;
-    nh_ptr = n;
+    n.param("use_lin", use_lin, true);
+    pub =  n.advertise<sensor_msgs::JointState>("trajectory_joint_states", 1);
+
+    timer = n.createTimer(ros::Duration(4./200), &Trajectory::next_step, this, false, false);
+
+    get_target_state = n.subscribe<sensor_msgs::JointState>("joint_states", 100, &Trajectory::target_states_cb, this);
+
+    
 }
 
 bool Trajectory::compare_target(sensor_msgs::JointStateConstPtr input) {
@@ -60,8 +66,14 @@ void Trajectory::init_nonlin(sensor_msgs::JointStateConstPtr msg) {
 }
 
 void Trajectory::next_step(const ros::TimerEvent& event) {
+    n.param("use_lin", use_lin, true);
     if(use_lin) this->next_step_lin(event);
     else this->next_step_nonlin(event);
+    if(inc > msg_amount) 
+    {
+        timer.stop();
+	return;
+    }
 }
 
 void Trajectory::next_step_lin(const ros::TimerEvent& event) {
@@ -107,5 +119,22 @@ void Trajectory::next_step_nonlin(const ros::TimerEvent& event) {
 
 void Trajectory::publish_current() {
     current.header.stamp = ros::Time::now();
-    this->pub_ptr->publish(current);
+    this->pub.publish(current);
+}
+
+void Trajectory::target_states_cb(const sensor_msgs::JointStateConstPtr &msg)
+{
+    if (!is_init())
+    {
+        init(msg);
+    }
+    if (compare_target(msg))
+    {
+        init_inter(msg);
+        timer.start();
+    }
+    else
+    {
+        publish_current();
+    }
 }

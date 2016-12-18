@@ -9,18 +9,21 @@ class Trajectory
 {
     private:
         bool _is_init;
+	bool mode; //1 for joint trajectory, 2 for position
         double delta[3], accel[3];
-        ros::NodeHandle* nh_ptr;
-        ros::Publisher* pub_ptr;
+	ros::NodeHandle n; 
+        ros::Publisher pub;
+	ros::Timer timer;
+	ros::Subscriber get_target_state;
         sensor_msgs::JointState initial, current, target;
 
     public:
-        Trajectory(ros::NodeHandle *n, ros::Publisher *pub);
+        Trajectory();
         ~Trajectory(){};
 
         bool is_init();
         void init(sensor_msgs::JointStateConstPtr msg);
-
+	void target_states_cb(const sensor_msgs::JointStateConstPtr &msg);
         bool use_lin;
         int msg_amount;
         int inc; //number of passed increments in current timer cycle
