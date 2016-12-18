@@ -5,12 +5,12 @@ using namespace std;
 Trajectory::Trajectory() {
     _is_init = 0;
     n.param("use_lin", use_lin, true);
+    n.param("trajectory_mode", mode, false); 
     pub =  n.advertise<sensor_msgs::JointState>("trajectory_joint_states", 1);
 
     timer = n.createTimer(ros::Duration(4./200), &Trajectory::next_step, this, false, false);
-
     get_target_state = n.subscribe<sensor_msgs::JointState>("joint_states", 100, &Trajectory::target_states_cb, this);
-
+    end_to_joints = n.serviceClient<anrobot_description::InvKinematics>("inv_kinematics");
     
 }
 
@@ -66,7 +66,7 @@ void Trajectory::init_nonlin(sensor_msgs::JointStateConstPtr msg) {
 }
 
 void Trajectory::next_step(const ros::TimerEvent& event) {
-    n.param("use_lin", use_lin, true);
+    
     if(use_lin) this->next_step_lin(event);
     else this->next_step_nonlin(event);
     if(inc > msg_amount) 
@@ -118,8 +118,22 @@ void Trajectory::next_step_nonlin(const ros::TimerEvent& event) {
 }
 
 void Trajectory::publish_current() {
-    current.header.stamp = ros::Time::now();
-    this->pub.publish(current);
+    if(mode) {
+        anrobot_description::InvKinematics srv;
+        srv.request.x = current.position[0];
+        srv.request.y = current.position[1];
+        srv.request.z = current.position[2];
+        end_to_joints.call(srv);
+        if(srv.response.success)
+            this->pub.publish(srv.response.states);
+         
+
+    }
+    else {
+        cout << "im here\n";
+        current.header.stamp = ros::Time::now();
+        this->pub.publish(current);
+    }
 }
 
 void Trajectory::target_states_cb(const sensor_msgs::JointStateConstPtr &msg)

@@ -38,7 +38,7 @@ class States
 
 			double eq = 1 - pow((x*x + y*y - a*a - b*b) / (2*a*b), 2);
 			if(z < -3. || z > -0.3 || eq < 0) {
-				ROS_ERROR_STREAM("Invalid target position\n");
+				ROS_ERROR_STREAM("Invalid target position\n" << x << " " << y << " " << z <<"\n" );
 				return false;
 			}
 			double theta2 = atan2(sqrt(eq),(x*x + y*y - a*a - b*b) / (2*a*b));
