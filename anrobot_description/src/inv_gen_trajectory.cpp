@@ -5,6 +5,9 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "inv_gen_trajectory");
     InvTrajectory inv;
-    ros::spin();
+    while(ros::ok()) {
+        inv.publish_current();
+        ros::spinOnce();
+    }
     return 0;
 }

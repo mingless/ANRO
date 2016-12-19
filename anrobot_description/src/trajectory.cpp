@@ -160,10 +160,14 @@ bool InvTrajectory::compare_target(geometry_msgs::PointConstPtr input) {
 void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
     msg_amount = 300;
     inc = 0;
-    _is_init = 1;
-    end_current = *msg;
-    end_initial = end_current;
-    end_target = end_current;
+    anrobot_description::InvKinematics srv;
+    srv.request.point = *msg;
+    if(end_to_joints.call(srv)) {
+        _is_init = 1;
+        end_current = *msg;
+        end_initial = end_current;
+        end_target = end_current;
+    }
 }
 
 bool InvTrajectory::is_init() {
@@ -180,10 +184,13 @@ void InvTrajectory::init_inter(geometry_msgs::PointConstPtr msg) {
 void InvTrajectory::publish_current() {
     anrobot_description::InvKinematics srv;
     srv.request.point = end_current;
-    end_to_joints.call(srv);
     this->pub_end.publish(end_current);
-    if(srv.response.success) {
+    if(end_to_joints.call(srv)) {
+        srv.response.states.header.stamp = ros::Time::now();
         this->pub_states.publish(srv.response.states);
+    }
+    else {
+        timer.stop();
     }
 }
 
