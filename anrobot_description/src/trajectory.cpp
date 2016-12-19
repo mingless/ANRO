@@ -177,8 +177,15 @@ bool InvTrajectory::is_init() {
 void InvTrajectory::init_inter(geometry_msgs::PointConstPtr msg) {
     n.param("use_lin", use_lin, true);
 
-    if(use_lin) this->init_lin(msg);
-    else this->init_nonlin(msg);
+    anrobot_description::InvKinematics srv;
+    srv.request.point = *msg;
+    if(end_to_joints.call(srv)) {
+        srv.response.states.header.stamp = ros::Time::now();
+        this->pub_states.publish(srv.response.states);
+
+        if(use_lin) this->init_lin(msg);
+        else this->init_nonlin(msg);
+    }
 }
 
 void InvTrajectory::publish_current() {

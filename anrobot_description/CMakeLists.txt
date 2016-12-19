@@ -167,6 +167,9 @@ add_executable(inv_gen_trajectory src/inv_gen_trajectory.cpp)
 target_link_libraries(inv_gen_trajectory ${LIBS})
 add_dependencies(inv_gen_trajectory ${anrobot_description_EXPORTED_TARGETS})
 
+add_executable(trajectory_marker_pub src/trajectory_marker_pub.cpp)
+target_link_libraries(trajectory_marker_pub ${LIBS})
+
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(anrobot_description_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -186,7 +189,7 @@ add_dependencies(inv_gen_trajectory ${anrobot_description_EXPORTED_TARGETS})
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory inv_gen_trajectory inv_kinematics
+install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory inv_gen_trajectory inv_kinematics trajectory_marker_pub
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

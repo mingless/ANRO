@@ -90,9 +90,9 @@ int main(int argc, char** argv)
     k.marker_pub = &marker_pub;
     k.kdl_client = &kdl_client;
     k.simple_client = &simple_client;
-    
+
     ros::Subscriber get_joint_states = n.subscribe<sensor_msgs::JointState>("joint_states", 100, boost::bind(joint_states_cb, _1, k));
-    
+
     ros::spin();
 
     return 0;

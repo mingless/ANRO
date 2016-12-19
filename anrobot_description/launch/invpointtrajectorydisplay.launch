@@ -20,6 +20,7 @@
     </node>
     <node name="inv_gen_trajectory" pkg="anrobot_description" type="inv_gen_trajectory" />
     <node name="inv_kinematics" pkg="anrobot_description" type="inv_kinematics" />
+    <node name="trajectory_marker_pub" pkg="anrobot_description" type="trajectory_marker_pub" />
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot_description)/urdf.rviz" required="true" />
 </launch>
 

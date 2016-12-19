@@ -4,10 +4,9 @@
 
 
 
-void get_point_cb(const geometry_msgs::PointConstPtr &msg, Publisher *pub) {
-    
+void get_point_cb(const geometry_msgs::PointConstPtr &msg, ros::Publisher *pub) {
     visualization_msgs::Marker marker;
-    
+
     marker.pose.position.x = msg->x;
     marker.pose.position.y = msg->y;
     marker.pose.position.z = msg->z;
@@ -34,16 +33,13 @@ void get_point_cb(const geometry_msgs::PointConstPtr &msg, Publisher *pub) {
     pub->publish(marker);
 }
 
-
-
-
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "point_to_marker");
+    ros::init(argc, argv, "trajectory_marker_pub");
     ros::NodeHandle n;
-    ros::Subscriber get_point = n.subscribe<geometry_msgs::Point>("end_trajectory", 100, boost::bind(joint_states_cb, _1, &marker_pub);
     ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-    
-    ros::spin()
+    ros::Subscriber get_point = n.subscribe<geometry_msgs::Point>("end_trajectory", 100, boost::bind(get_point_cb, _1, &marker_pub));
+
+    ros::spin();
 
 	return 0;
 }

@@ -1,7 +1,8 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/Point.h>
-#include "anrobot_description/InvKinematics.h"
+#include <anrobot_description/InvKinematics.h>
+#include <anrobot_description/SetTarget.h>
 #include <math.h>
 
 
@@ -9,12 +10,15 @@ class States
 {
 	private:
 		ros::NodeHandle n;
-		ros::Publisher inv_kin_pub;
-		ros::ServiceServer inv_kin_client;
+		ros::Publisher target_pub;
+		ros::ServiceServer inv_kin, set_end_target;
 	public:
 		States() {
-			inv_kin_client = n.advertiseService("inv_kinematics",
+			inv_kin = n.advertiseService("inv_kinematics",
                     &States::get_states, this);
+			set_end_target = n.advertiseService("set_end_target",
+                    &States::set_target, this);
+            target_pub = n.advertise<geometry_msgs::Point>("target_end", 1);
 		}
 
 		bool get_states(anrobot_description::InvKinematics::Request &req,
@@ -37,7 +41,7 @@ class States
 
 			double eq = 1 - pow((x*x + y*y - a*a - b*b) / (2*a*b), 2);
 			if(z < -3. || z > -0.3 || eq < 0) {
-				ROS_ERROR_STREAM("Invalid target position\n" << x << " " << y << " " << z <<"\n");
+				ROS_ERROR_STREAM_THROTTLE(1, "Invalid target position\n" << x << " " << y << " " << z <<"\n");
 				return false;
 			}
 			double theta2 = atan2(sqrt(eq),(x*x + y*y - a*a - b*b) / (2*a*b));
@@ -50,6 +54,14 @@ class States
 			res.success = true;
 			return true;
 		}
+
+        bool set_target(anrobot_description::SetTarget::Request &req,
+                anrobot_description::SetTarget::Response &res) {
+            res.success = false;
+            target_pub.publish(req.point);
+            res.success = true;
+            return true;
+        }
 };
 
 
