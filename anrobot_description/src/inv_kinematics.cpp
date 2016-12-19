@@ -19,6 +19,7 @@ class States
 			set_end_target = n.advertiseService("set_end_target",
                     &States::set_target, this);
             target_pub = n.advertise<geometry_msgs::Point>("target_end", 1);
+            ROS_WARN_ONCE("Target position not set.");
 		}
 
 		bool get_states(anrobot_description::InvKinematics::Request &req,
@@ -45,7 +46,7 @@ class States
 				return false;
 			}
 			double theta2 = atan2(sqrt(eq),(x*x + y*y - a*a - b*b) / (2*a*b));
-			double theta1 = atan2(y,x) - atan2(b*sin(theta2) ,a + b*cos(theta2));
+			double theta1 = atan2(y,x) - atan2(b*sin(theta2), a + b*cos(theta2));
 			double d3 = -z;
 			state.position.push_back(theta1);
 			state.position.push_back(theta2);
