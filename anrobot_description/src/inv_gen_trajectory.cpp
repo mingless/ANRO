@@ -4,17 +4,14 @@
 
 void target_states_cb(const sensor_msgs::JointStateConstPtr &msg, ros::Timer *timer, Trajectory *t)
 {
-    if (!t->is_init())
-    {
+    if (!t->is_init()) {
         t->init(msg);
     }
-    if (t->compare_target(msg))
-    {
+    if (t->compare_target(msg)) {
         t->init_inter(msg);
         timer->start();
     }
-    else
-    {
+    else {
         t->publish_current();
     }
 }
@@ -34,8 +31,7 @@ int main(int argc, char **argv)
 
     ros::Subscriber get_target_state = n.subscribe<sensor_msgs::JointState>("joint_states", 100, boost::bind(target_states_cb, _1, &timer, &t));
 
-    while(ros::ok())
-    {
+    while(ros::ok()) {
         n.param("use_lin", t.use_lin, true);
         if(t.inc > t.msg_amount) timer.stop();
         ros::spinOnce();
