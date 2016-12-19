@@ -64,6 +64,7 @@ add_service_files(
   FILES
   FwdKinematics.srv
   InvKinematics.srv
+  SetTarget.srv
 )
 
 ## Generate actions in the 'action' folder
