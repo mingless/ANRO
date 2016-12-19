@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 int main(int argc,char *argv[]){
-	KDL::Chain chain;	
+	KDL::Chain chain;
 	double pi = M_PI;
 	double a1 = 2, a2 = 1, theta1, theta2, d3;
 	if(argc == 4) {
@@ -28,12 +28,12 @@ int main(int argc,char *argv[]){
 	double joint[3], tip[3];
 	double roll, pitch, yaw;
 	for (unsigned int i = 0; i < 3; ++i){
-		for(int j = 0; j < 3; j++){ 
+		for(int j = 0; j < 3; j++){
 			joint[j] = chain.getSegment(i).getJoint().JointAxis().data[j];
 			tip[j] = chain.getSegment(i).getFrameToTip().p.data[j];
 		}
 		chain.getSegment(i).getFrameToTip().M.GetRPY(roll, pitch, yaw);
-		
+
 		std::cout << "Joint " << i << " rpy : " << joint[0] << ", " << joint[1] << ", " << joint[2] << std::endl;
 		std::cout << "TipFrame " << i << " rpy : " << roll << ", " << pitch << ", " << yaw << std::endl;
 		std::cout << "TipFrame " << i << " xyz : " << tip[0] << ", " << tip[1] << ", " << tip[2] << std::endl;

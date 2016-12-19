@@ -41,16 +41,29 @@ class Trajectory {
         virtual void next_step_nonlin(const ros::TimerEvent &event);
 };
 
-class InvTrajectory : public Trajectory {
+class InvTrajectory {
     protected:
-        bool mode; // trajectory_mode param, 0 for 1 for
+        bool _is_init;
+        double delta[3], accel[3];
+
+        ros::NodeHandle n;
+        ros::Publisher pub;
+        ros::Timer timer;
+        ros::Subscriber get_target;
+        ros::ServiceClient end_to_joints;
+
         geometry_msgs::Point end_target, end_current, end_initial;
 
     public:
         InvTrajectory();
         ~InvTrajectory(){};
 
+        bool is_init();
         void init(geometry_msgs::PointConstPtr msg);
+
+        bool use_lin;
+        int msg_amount;
+        int inc; //number of passed increments in current timer cycle
 
         bool compare_target(geometry_msgs::PointConstPtr input);
 	    void target_states_cb(const geometry_msgs::PointConstPtr &msg);
@@ -63,5 +76,4 @@ class InvTrajectory : public Trajectory {
         void next_step(const ros::TimerEvent &event);
         virtual void next_step_lin(const ros::TimerEvent &event);
         virtual void next_step_nonlin(const ros::TimerEvent &event);
-
 };

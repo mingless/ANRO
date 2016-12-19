@@ -130,9 +130,8 @@ void Trajectory::target_states_cb(const sensor_msgs::JointStateConstPtr &msg)
 InvTrajectory::InvTrajectory() {
     _is_init = 0;
     n.param("use_lin", use_lin, true);
-    n.param("trajectory_mode", mode, false);
 
-    pub = n.advertise<sensor_msgs::JointState>("trajectory_joint_states", 1);
+    pub = n.advertise<sensor_msgs::JointState>("end_trajectory", 1);
 
     timer = n.createTimer(ros::Duration(4./200),
             &InvTrajectory::next_step, this, false, false);
@@ -166,6 +165,10 @@ void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
     end_target = end_current;
 }
 
+bool InvTrajectory::is_init() {
+    return _is_init;
+}
+
 void InvTrajectory::init_inter(geometry_msgs::PointConstPtr msg) {
     n.param("use_lin", use_lin, true);
 
@@ -174,18 +177,12 @@ void InvTrajectory::init_inter(geometry_msgs::PointConstPtr msg) {
 }
 
 void InvTrajectory::publish_current() {
-    if(mode) {
-        anrobot_description::InvKinematics srv;
-        srv.request.point = end_current;
-        end_to_joints.call(srv);
-        this->pub_end.publish(end_current);
-        if(srv.response.success) {
-            this->pub.publish(srv.response.states);
-        }
-    }
-    else {
-        current.header.stamp = ros::Time::now();
-        this->pub.publish(current);
+    anrobot_description::InvKinematics srv;
+    srv.request.point = end_current;
+    end_to_joints.call(srv);
+    this->pub.publish(end_current);
+    if(srv.response.success) {
+        this->pub.publish(srv.response.states);
     }
 }
 
