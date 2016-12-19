@@ -131,7 +131,8 @@ InvTrajectory::InvTrajectory() {
     _is_init = 0;
     n.param("use_lin", use_lin, true);
 
-    pub = n.advertise<sensor_msgs::JointState>("end_trajectory", 1);
+    pub_end = n.advertise<geometry_msgs::Point>("end_trajectory", 1);
+    pub_states = n.advertise<sensor_msgs::JointState>("trajectory_joint_states", 1);
 
     timer = n.createTimer(ros::Duration(4./200),
             &InvTrajectory::next_step, this, false, false);
@@ -180,9 +181,9 @@ void InvTrajectory::publish_current() {
     anrobot_description::InvKinematics srv;
     srv.request.point = end_current;
     end_to_joints.call(srv);
-    this->pub.publish(end_current);
+    this->pub_end.publish(end_current);
     if(srv.response.success) {
-        this->pub.publish(srv.response.states);
+        this->pub_states.publish(srv.response.states);
     }
 }
 

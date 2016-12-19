@@ -47,7 +47,7 @@ class InvTrajectory {
         double delta[3], accel[3];
 
         ros::NodeHandle n;
-        ros::Publisher pub;
+        ros::Publisher pub_end, pub_states;
         ros::Timer timer;
         ros::Subscriber get_target;
         ros::ServiceClient end_to_joints;

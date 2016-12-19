@@ -2,20 +2,23 @@
     <arg name="model" default='$(find anrobot_description)/urdf/movable.urdf' />
     <arg name="gui" default="False" />
     <arg name="use_lin" default="True" />
-    <arg name="trajectory_mode" default="True" />
 
     <param name="robot_description" textfile="$(arg model)" />
     <param name="use_gui" value="$(arg gui)"/>
     <param name="use_lin" value="$(arg use_lin)"/>
-    <param name="trajectory_mode" value="$(arg trajectory_mode)"/>
 
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-        <rosparam param="source_list">["trajectory_joint_states"]</rosparam>
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+        <rosparam>
+              zeros:
+                joint1: 0.1
+                joint2: 0.3
+                joint3: 1.5
+        </rosparam>
     </node>
-    <node name="gen_trajectory" pkg="anrobot_description" type="gen_trajectory" >
-        <remap from="joint_states" to="target_point" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
+        <remap from="joint_states" to="trajectory_joint_states" />
     </node>
+    <node name="inv_gen_trajectory" pkg="anrobot_description" type="inv_gen_trajectory" />
     <node name="inv_kinematics" pkg="anrobot_description" type="inv_kinematics" />
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot_description)/urdf.rviz" required="true" />
 </launch>

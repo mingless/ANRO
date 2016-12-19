@@ -141,45 +141,30 @@ set(LIBS ${catkin_LIBRARIES} trajectory)
 add_dependencies(trajectory ${anrobot_description_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(dh_to_urdf src/dh_to_urdf.cpp
-    )
-target_link_libraries(dh_to_urdf
-    ${LIBS}
-    )
+add_executable(dh_to_urdf src/dh_to_urdf.cpp)
+target_link_libraries(dh_to_urdf ${LIBS})
 
-add_executable(gen_trajectory src/gen_trajectory.cpp
-    )
-target_link_libraries(gen_trajectory
-    ${LIBS}
-    )
+add_executable(gen_trajectory src/gen_trajectory.cpp)
+target_link_libraries(gen_trajectory ${LIBS})
 
-add_executable(kdl_fwd_kinematics src/kdl_fwd_kinematics.cpp
-    )
-target_link_libraries(kdl_fwd_kinematics
-    ${LIBS}
-    )
+add_executable(kdl_fwd_kinematics src/kdl_fwd_kinematics.cpp)
+target_link_libraries(kdl_fwd_kinematics ${LIBS})
 add_dependencies(kdl_fwd_kinematics ${anrobot_description_EXPORTED_TARGETS})
 
-add_executable(simple_fwd_kinematics src/simple_fwd_kinematics.cpp
-    )
-target_link_libraries(simple_fwd_kinematics
-    ${LIBS}
-    )
+add_executable(simple_fwd_kinematics src/simple_fwd_kinematics.cpp)
+target_link_libraries(simple_fwd_kinematics ${LIBS})
 add_dependencies(simple_fwd_kinematics  ${anrobot_description_EXPORTED_TARGETS})
 
-add_executable(set_param src/set_param.cpp
-    )
-target_link_libraries(set_param
-    ${LIBS}
-    )
+add_executable(set_param src/set_param.cpp)
+target_link_libraries(set_param ${LIBS})
 
-add_executable(inv_kinematics src/inv_kinematics.cpp
-)
-target_link_libraries(inv_kinematics
-    ${LIBS}
-)
+add_executable(inv_kinematics src/inv_kinematics.cpp)
+target_link_libraries(inv_kinematics ${LIBS})
 add_dependencies(inv_kinematics ${anrobot_description_EXPORTED_TARGETS})
 
+add_executable(inv_gen_trajectory src/inv_gen_trajectory.cpp)
+target_link_libraries(inv_gen_trajectory ${LIBS})
+add_dependencies(inv_gen_trajectory ${anrobot_description_EXPORTED_TARGETS})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -200,7 +185,7 @@ add_dependencies(inv_kinematics ${anrobot_description_EXPORTED_TARGETS})
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory inv_kinematics
+install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory inv_gen_trajectory inv_kinematics
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
