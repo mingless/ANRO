@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/Point.h>
-#include <anrobot_description/InvKinematics.h>
-#include <anrobot_description/SetTarget.h>
+#include <anrobot/InvKinematics.h>
+#include <anrobot/SetTarget.h>
 #include <math.h>
 
 
@@ -22,8 +22,8 @@ class States
             ROS_WARN_ONCE("Target position not set.");
 		}
 
-		bool get_states(anrobot_description::InvKinematics::Request &req,
-		anrobot_description::InvKinematics::Response &res)
+		bool get_states(anrobot::InvKinematics::Request &req,
+		anrobot::InvKinematics::Response &res)
 		{
             res.success = false;
 			sensor_msgs::JointState state;
@@ -56,8 +56,8 @@ class States
 			return true;
 		}
 
-        bool set_target(anrobot_description::SetTarget::Request &req,
-                anrobot_description::SetTarget::Response &res) {
+        bool set_target(anrobot::SetTarget::Request &req,
+                anrobot::SetTarget::Response &res) {
             res.success = false;
             target_pub.publish(req.point);
             res.success = true;

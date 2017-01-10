@@ -3,7 +3,7 @@
 #include <sensor_msgs/JointState.h>
 #include <iostream>
 #include <geometry_msgs/Point.h>
-#include <anrobot_description/InvKinematics.h>
+#include <anrobot/InvKinematics.h>
 
 class Trajectory {
     protected:

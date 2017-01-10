@@ -1,7 +1,7 @@
-#include "anrobot_description/kdl_fwd_kinematics.h"
+#include "anrobot/kdl_fwd_kinematics.h"
 
-bool get_pose(anrobot_description::FwdKinematics::Request  &req,
-        anrobot_description::FwdKinematics::Response &res)
+bool get_pose(anrobot::FwdKinematics::Request  &req,
+        anrobot::FwdKinematics::Response &res)
 {
     KDL::Chain chain;
     double a1 = 2, a2 = 1;

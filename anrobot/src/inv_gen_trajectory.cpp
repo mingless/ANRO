@@ -1,5 +1,5 @@
-#include <anrobot_description/trajectory.h>
-#include <anrobot_description/InvKinematics.h>
+#include <anrobot/trajectory.h>
+#include <anrobot/InvKinematics.h>
 
 int main(int argc, char **argv)
 {

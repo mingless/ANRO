@@ -1,5 +1,5 @@
 <launch>
-    <arg name="model" default='$(find anrobot_description)/urdf/movable.urdf' />
+    <arg name="model" default='$(find anrobot)/urdf/movable.urdf' />
     <arg name="gui" default="True" />
     <arg name="use_lin" default="True" />
 
@@ -18,7 +18,7 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
         <remap from="joint_states" to="trajectory_joint_states" />
     </node>
-    <node name="gen_trajectory" pkg="anrobot_description" type="gen_trajectory" />
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot_description)/urdf.rviz" required="true" />
+    <node name="gen_trajectory" pkg="anrobot" type="gen_trajectory" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot)/urdf.rviz" required="true" />
 </launch>
 

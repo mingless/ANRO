@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include <sensor_msgs/JointState.h>
-#include "anrobot_description/FwdKinematics.h"
+#include "anrobot/FwdKinematics.h"
 
 typedef struct kinematicsManagmentStruct
 {
@@ -13,7 +13,7 @@ typedef struct kinematicsManagmentStruct
 
 void joint_states_cb(const sensor_msgs::JointStateConstPtr &msg, KinStruct k)
 {
-    anrobot_description::FwdKinematics srv;
+    anrobot::FwdKinematics srv;
     srv.request.theta1 = msg->position[0];
     srv.request.theta2 = msg->position[1];
     srv.request.d3 = msg->position[2];
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "set_param");
     if(argc != 2)
     {
-        ROS_ERROR_STREAM("Usage:  rosrun anrobot_description set_param arg" << "\n"
+        ROS_ERROR_STREAM("Usage:  rosrun anrobot set_param arg" << "\n"
 		         << "arg:  0 for simple_fwd, 1 for kdl_fwd");
         return 1;
     }
@@ -82,8 +82,8 @@ int main(int argc, char** argv)
     ros::NodeHandle n;
 
     ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-    ros::ServiceClient kdl_client = n.serviceClient<anrobot_description::FwdKinematics>("kdl_fwd");
-    ros::ServiceClient simple_client = n.serviceClient<anrobot_description::FwdKinematics>("simple_fwd");
+    ros::ServiceClient kdl_client = n.serviceClient<anrobot::FwdKinematics>("kdl_fwd");
+    ros::ServiceClient simple_client = n.serviceClient<anrobot::FwdKinematics>("simple_fwd");
 
     KinStruct k;
     k.use_kdl = atoi(argv[1]);

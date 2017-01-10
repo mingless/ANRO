@@ -1,7 +1,0 @@
-<launch>
-        <arg name="model" default='$(find anrobot_description)/urdf/static.urdf' />
-        <param name="robot_description" textfile="$(arg model)" />
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot_description)/urdf.rviz" required="true" />
-</launch>
-

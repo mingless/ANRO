@@ -1,4 +1,4 @@
-#include <anrobot_description/trajectory.h>
+#include <anrobot/trajectory.h>
 
 Trajectory::Trajectory() {
     _is_init = 0;
@@ -140,7 +140,7 @@ InvTrajectory::InvTrajectory() {
     get_target = n.subscribe<geometry_msgs::Point>(
             "target_end", 100, &InvTrajectory::target_states_cb, this);
 
-    end_to_joints = n.serviceClient<anrobot_description::InvKinematics>(
+    end_to_joints = n.serviceClient<anrobot::InvKinematics>(
             "inv_kinematics");
 }
 
@@ -160,7 +160,7 @@ bool InvTrajectory::compare_target(geometry_msgs::PointConstPtr input) {
 void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
     msg_amount = 300;
     inc = 0;
-    anrobot_description::InvKinematics srv;
+    anrobot::InvKinematics srv;
     srv.request.point = *msg;
     if(end_to_joints.call(srv)) {
         _is_init = 1;
@@ -177,7 +177,7 @@ bool InvTrajectory::is_init() {
 void InvTrajectory::init_inter(geometry_msgs::PointConstPtr msg) {
     n.param("use_lin", use_lin, true);
 
-    anrobot_description::InvKinematics srv;
+    anrobot::InvKinematics srv;
     srv.request.point = *msg;
     if(end_to_joints.call(srv)) {
         srv.response.states.header.stamp = ros::Time::now();
@@ -189,7 +189,7 @@ void InvTrajectory::init_inter(geometry_msgs::PointConstPtr msg) {
 }
 
 void InvTrajectory::publish_current() {
-    anrobot_description::InvKinematics srv;
+    anrobot::InvKinematics srv;
     srv.request.point = end_current;
     this->pub_end.publish(end_current);
     if(end_to_joints.call(srv)) {

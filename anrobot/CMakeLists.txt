@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(anrobot_description)
+project(anrobot)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -111,7 +111,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
     #  INCLUDE_DIRS include
-    #  LIBRARIES anrobot_description
+    #  LIBRARIES anrobot
     CATKIN_DEPENDS roscpp rospy geometry_msgs message_runtime sensor_msgs std_msgs std_srvs tf urdf visualization_msgs
     #  DEPENDS system_lib
     )
@@ -137,9 +137,9 @@ set(LIBS ${catkin_LIBRARIES} trajectory)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(anrobot_description ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(anrobot ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_dependencies(trajectory ${anrobot_description_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(trajectory ${anrobot_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 add_executable(dh_to_urdf src/dh_to_urdf.cpp)
@@ -150,29 +150,29 @@ target_link_libraries(gen_trajectory ${LIBS})
 
 add_executable(kdl_fwd_kinematics src/kdl_fwd_kinematics.cpp)
 target_link_libraries(kdl_fwd_kinematics ${LIBS})
-add_dependencies(kdl_fwd_kinematics ${anrobot_description_EXPORTED_TARGETS})
+add_dependencies(kdl_fwd_kinematics ${anrobot_EXPORTED_TARGETS})
 
 add_executable(simple_fwd_kinematics src/simple_fwd_kinematics.cpp)
 target_link_libraries(simple_fwd_kinematics ${LIBS})
-add_dependencies(simple_fwd_kinematics  ${anrobot_description_EXPORTED_TARGETS})
+add_dependencies(simple_fwd_kinematics  ${anrobot_EXPORTED_TARGETS})
 
 add_executable(set_param src/set_param.cpp)
 target_link_libraries(set_param ${LIBS})
 
 add_executable(inv_kinematics src/inv_kinematics.cpp)
 target_link_libraries(inv_kinematics ${LIBS})
-add_dependencies(inv_kinematics ${anrobot_description_EXPORTED_TARGETS})
+add_dependencies(inv_kinematics ${anrobot_EXPORTED_TARGETS})
 
 add_executable(inv_gen_trajectory src/inv_gen_trajectory.cpp)
 target_link_libraries(inv_gen_trajectory ${LIBS})
-add_dependencies(inv_gen_trajectory ${anrobot_description_EXPORTED_TARGETS})
+add_dependencies(inv_gen_trajectory ${anrobot_EXPORTED_TARGETS})
 
 add_executable(trajectory_marker_pub src/trajectory_marker_pub.cpp)
 target_link_libraries(trajectory_marker_pub ${LIBS})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(anrobot_description_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(anrobot_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##
@@ -224,7 +224,7 @@ install(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_anrobot_description.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_anrobot.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

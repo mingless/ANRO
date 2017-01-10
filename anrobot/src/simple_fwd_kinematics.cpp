@@ -1,7 +1,7 @@
-#include "anrobot_description/simple_fwd_kinematics.h"
+#include "anrobot/simple_fwd_kinematics.h"
 
-bool get_pose(anrobot_description::FwdKinematics::Request  &req,
-        anrobot_description::FwdKinematics::Response &res)
+bool get_pose(anrobot::FwdKinematics::Request  &req,
+        anrobot::FwdKinematics::Response &res)
 {
     double c1 = cos(req.theta1), c2 = cos(req.theta2),
            s1 = sin(req.theta1), s2 = sin(req.theta2);

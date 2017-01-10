@@ -6,7 +6,7 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <math.h>
 #include <stdlib.h>
-#include "anrobot_description/FwdKinematics.h"
+#include "anrobot/FwdKinematics.h"
 
-bool get_pose(anrobot_description::FwdKinematics::Request  &req,
-	      anrobot_description::FwdKinematics::Response &res);
+bool get_pose(anrobot::FwdKinematics::Request  &req,
+	      anrobot::FwdKinematics::Response &res);

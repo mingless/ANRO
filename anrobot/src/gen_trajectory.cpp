@@ -1,4 +1,4 @@
-#include <anrobot_description/trajectory.h>
+#include <anrobot/trajectory.h>
 
 int main(int argc, char **argv)
 {
