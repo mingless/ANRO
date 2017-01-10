@@ -9,7 +9,7 @@ Trajectory::Trajectory() {
     timer = n.createTimer(ros::Duration(4./200),
             &Trajectory::next_step, this, false, false);
 
-    get_target_state = n.subscribe<sensor_msgs::JointState>(
+    get_target = n.subscribe<sensor_msgs::JointState>(
             "joint_states", 100, &Trajectory::target_states_cb, this);
 }
 
@@ -168,10 +168,6 @@ void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
         end_initial = end_current;
         end_target = end_current;
     }
-}
-
-bool InvTrajectory::is_init() {
-    return _is_init;
 }
 
 void InvTrajectory::init_inter(geometry_msgs::PointConstPtr msg) {
