@@ -1,12 +1,12 @@
 <launch>
-        <arg name="model" default='$(find anrobot)/urdf/movable.urdf' />
-        <arg name="gui" default="True" />
-        <param name="robot_description" textfile="$(arg model)" />
-        <param name="use_gui" value="$(arg gui)"/>
-        <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-        <node name="simple_fwd" pkg="anrobot" type="simple_fwd_kinematics" />
-        <node name="kdl_fwd" pkg="anrobot" type="kdl_fwd_kinematics" />
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot)/urdf.rviz" required="true" />
+    <arg name="model" default='$(find anrobot)/urdf/movable.urdf' />
+    <arg name="gui" default="True" />
+    <param name="robot_description" textfile="$(arg model)" />
+    <param name="use_gui" value="$(arg gui)"/>
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+    <node name="simple_fwd" pkg="anrobot" type="simple_fwd_kinematics" />
+    <node name="kdl_fwd" pkg="anrobot" type="kdl_fwd_kinematics" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot)/rviz/urdf.rviz" required="true" />
 </launch>
 

@@ -19,6 +19,6 @@
         <remap from="joint_states" to="trajectory_joint_states" />
     </node>
     <node name="gen_trajectory" pkg="anrobot" type="gen_trajectory" />
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot)/urdf.rviz" required="true" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot)/rviz/urdf.rviz" required="true" />
 </launch>
 
