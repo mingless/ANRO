@@ -160,7 +160,7 @@ void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
 bool InvTrajectory::validate_reachability(geometry_msgs::PointConstPtr input) {
     double x1 = input->x, y1 = input->y,
            x2 = end_target.x, y2 = end_target.y;
-    double min_dist = 2.17158;
+    double min_dist = 1.47363;
     double a1, a2, b1, xinter, yinter;
     if((x2-x1)*(x2-x1)<=0.0001) {
         xinter = x1;

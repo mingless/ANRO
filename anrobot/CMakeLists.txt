@@ -219,6 +219,12 @@ install(
     FILES_MATCHING PATTERN "*.urdf"
     )
 
+install(
+    DIRECTORY rviz
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    FILES_MATCHING PATTERN "*.rviz"
+    )
+
 #############
 ## Testing ##
 #############
