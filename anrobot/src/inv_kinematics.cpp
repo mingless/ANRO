@@ -19,12 +19,13 @@ class States
 			set_end_target = n.advertiseService("set_end_target",
                     &States::set_target, this);
             target_pub = n.advertise<geometry_msgs::Point>("target_end", 1);
-            ROS_WARN_ONCE("Target position not set.");
+            if(n.hasParam("") || !is_valid(default_target)) {
+                ROS_WARN_ONCE("Target position not set.");
+            }
 		}
 
 		bool get_states(anrobot::InvKinematics::Request &req,
-		anrobot::InvKinematics::Response &res)
-		{
+		anrobot::InvKinematics::Response &res) {
             res.success = false;
 			sensor_msgs::JointState state;
 			state.name.push_back("joint1");
@@ -41,7 +42,7 @@ class States
 			double b = 1;
 
 			double eq = 1 - pow((x*x + y*y - a*a - b*b) / (2*a*b), 2);
-			if(z < -3. || z > -0.3 || eq < 0) {
+			if(!is_valid(req.point)) {
 				ROS_ERROR_STREAM_THROTTLE(1, "Invalid target position\n" << x << " " << y << " " << z <<"\n");
 				return false;
 			}
@@ -55,6 +56,16 @@ class States
 			res.success = true;
 			return true;
 		}
+
+        bool is_valid(const geometry_msgs::Point &t) {  // target_position
+            double a = 2, b = 1;
+            double eq = 1 - pow((t.x*t.x + t.y*t.y - a*a - b*b) / (2*a*b), 2);
+			if(t.z < -3. || t.z > -0.3 || eq < 0) {
+                return false;
+            }
+            return true;
+        }
+
 
         bool set_target(anrobot::SetTarget::Request &req,
                 anrobot::SetTarget::Response &res) {

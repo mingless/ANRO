@@ -144,20 +144,18 @@ InvTrajectory::InvTrajectory() {
             "inv_kinematics");
 }
 
-bool InvTrajectory::compare_target(geometry_msgs::PointConstPtr input) {
-    double diff = 0;
-    {
-        diff += (input->x - end_target.x)*(input->x - end_target.x);
-        diff += (input->y - end_target.y)*(input->y - end_target.y);
-        diff += (input->z - end_target.z)*(input->z - end_target.z);
+void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
+    msg_amount = 300;
+    inc = 0;
+    anrobot::InvKinematics srv;
+    srv.request.point = *msg;
+    if(end_to_joints.call(srv)) {
+        _is_init = 1;
+        end_current = *msg;
+        end_initial = end_current;
+        end_target = end_current;
     }
-    if (diff > 0.01)
-        return 1;  // a != b
-    else
-        return 0;  // a = b
-};
-
-
+}
 
 bool InvTrajectory::validate_reachability(geometry_msgs::PointConstPtr input) {
     double x1 = input->x, y1 = input->y,
@@ -187,18 +185,18 @@ bool InvTrajectory::validate_reachability(geometry_msgs::PointConstPtr input) {
     return false;
 }
 
-void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
-    msg_amount = 300;
-    inc = 0;
-    anrobot::InvKinematics srv;
-    srv.request.point = *msg;
-    if(end_to_joints.call(srv)) {
-        _is_init = 1;
-        end_current = *msg;
-        end_initial = end_current;
-        end_target = end_current;
+bool InvTrajectory::compare_target(geometry_msgs::PointConstPtr input) {
+    double diff = 0;
+    {
+        diff += (input->x - end_target.x)*(input->x - end_target.x);
+        diff += (input->y - end_target.y)*(input->y - end_target.y);
+        diff += (input->z - end_target.z)*(input->z - end_target.z);
     }
-}
+    if (diff > 0.01)
+        return 1;  // a != b
+    else
+        return 0;  // a = b
+};
 
 void InvTrajectory::init_inter(geometry_msgs::PointConstPtr msg) {
     n.param("use_lin", use_lin, true);
