@@ -19,10 +19,7 @@ class States
 			set_end_target = n.advertiseService("set_end_target",
                     &States::set_target, this);
             target_pub = n.advertise<geometry_msgs::Point>("target_end", 1);
-            if(n.hasParam("") || !is_valid(default_target)) {
-                ROS_WARN_ONCE("Target position not set.");
-            }
-		}
+        }
 
 		bool get_states(anrobot::InvKinematics::Request &req,
 		anrobot::InvKinematics::Response &res) {
@@ -42,10 +39,17 @@ class States
 			double b = 1;
 
 			double eq = 1 - pow((x*x + y*y - a*a - b*b) / (2*a*b), 2);
+
 			if(!is_valid(req.point)) {
-				ROS_ERROR_STREAM_THROTTLE(1, "Invalid target position\n" << x << " " << y << " " << z <<"\n");
+				ROS_ERROR_STREAM_THROTTLE(5, "Invalid target position\n" << x
+                                          << " " << y << " " << z <<"\n");
 				return false;
 			}
+            else {
+                ROS_INFO_STREAM("Target set to: [" << x << ", "
+                                << y << ", " << z << "].");
+            }
+
 			double theta2 = atan2(sqrt(eq),(x*x + y*y - a*a - b*b) / (2*a*b));
 			double theta1 = atan2(y,x) - atan2(b*sin(theta2), a + b*cos(theta2));
 			double d3 = -z;
@@ -65,7 +69,6 @@ class States
             }
             return true;
         }
-
 
         bool set_target(anrobot::SetTarget::Request &req,
                 anrobot::SetTarget::Response &res) {
