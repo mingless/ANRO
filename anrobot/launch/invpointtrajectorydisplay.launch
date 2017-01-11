@@ -22,5 +22,6 @@
     <node name="inv_kinematics" pkg="anrobot" type="inv_kinematics" />
     <node name="trajectory_marker_pub" pkg="anrobot" type="trajectory_marker_pub" />
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find anrobot)/rviz/urdf.rviz" required="true" />
+    <node pkg="rosservice" type="rosservice" name="pos_init" args="call /set_end_target &quot;point: {x: 1.0, y: 2.0, z: -1.0}&quot;"/>
 </launch>
 

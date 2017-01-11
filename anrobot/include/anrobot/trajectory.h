@@ -29,7 +29,8 @@ class Trajectory {
         int inc; //number of passed increments in current timer cycle
 
         bool compare_target(sensor_msgs::JointStateConstPtr input);
-	    void target_states_cb(const sensor_msgs::JointStateConstPtr &msg);
+
+        void target_states_cb(const sensor_msgs::JointStateConstPtr &msg);
         virtual void publish_current();
 
         void init_inter(sensor_msgs::JointStateConstPtr msg);
@@ -55,6 +56,7 @@ class InvTrajectory : public Trajectory{
         void init(geometry_msgs::PointConstPtr msg);
 
         bool compare_target(geometry_msgs::PointConstPtr input);
+        bool validate_reachability(geometry_msgs::PointConstPtr input);
 	    void target_states_cb(const geometry_msgs::PointConstPtr &msg);
         virtual void publish_current();
 

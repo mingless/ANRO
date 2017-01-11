@@ -157,6 +157,36 @@ bool InvTrajectory::compare_target(geometry_msgs::PointConstPtr input) {
         return 0;  // a = b
 };
 
+
+
+bool InvTrajectory::validate_reachability(geometry_msgs::PointConstPtr input) {
+    double x1 = input->x, y1 = input->y,
+           x2 = end_target.x, y2 = end_target.y;
+    double min_dist = 2.17158;
+    double a1, a2, b1, xinter, yinter;
+    if((x2-x1)*(x2-x1)<=0.0001) {
+        xinter = x1;
+        yinter = 0;
+    }
+    else {
+        a1 = (y2-y1)/(x2-x1);
+        a2 = -1./a1;
+        b1 = y1 - a1*x1;
+        xinter = -b1/(a1-a2);
+        yinter = a2*xinter;
+    }
+    if(yinter*yinter+xinter*xinter > min_dist) {
+        return true;
+    }
+    if( (yinter < y1 && yinter < y2) || (yinter > y2 && yinter > y1)) {
+        if(fmin((x1*x1+y1*y1), (x2*x2+y2*y2)) > min_dist*min_dist)
+            return true;
+    }
+    ROS_ERROR_STREAM_THROTTLE(1, "Target " << x1 << " " << y1 << " " << input->z << " unreachable in straight line from current position.\n");
+    publish_current();
+    return false;
+}
+
 void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
     msg_amount = 300;
     inc = 0;
@@ -202,7 +232,7 @@ void InvTrajectory::target_states_cb(const geometry_msgs::PointConstPtr &msg)
     if (!is_init()) {
         init(msg);
     }
-    if (compare_target(msg)) {
+    if (compare_target(msg) && validate_reachability(msg)) {
         init_inter(msg);
         timer.start();
     }
