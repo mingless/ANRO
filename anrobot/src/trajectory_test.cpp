@@ -1,34 +1,37 @@
 #include <ros/ros.h>
 #include <anrobot/SetTarget.h>
 #include <std_srvs/SetBool.h>
+#include <queue>
 #include <fstream>
+#include <string>
+#include <ros/package.h>
 
 class TrajectoryTest {
 	private:
 		
-		int POINTS;
 		ros::NodeHandle n;
 		ros::ServiceServer send_next;
 		ros::ServiceClient next_point;
-		double target_points [3][3];
-		int inc;
+		std::queue<double> q;
 
 		bool send_next_cb(std_srvs::SetBool::Request &request, std_srvs::SetBool::Response &response) {
 			if(!request.data) {
 				ROS_ERROR_STREAM_THROTTLE(1, "Invalid point requested. Terminating.\n");
 				send_next.shutdown();
 			}
-			if(inc < POINTS) {
+			else if(!q.empty()) {
 				anrobot::SetTarget srv;
-				srv.request.point.x = target_points[inc][0];
-				srv.request.point.y = target_points[inc][1];
-				srv.request.point.z = target_points[inc][2];
+				srv.request.point.x = q.front();
+				q.pop();
+				srv.request.point.y = q.front();
+				q.pop();
+				srv.request.point.z = q.front();
+				q.pop();
 				next_point.call(srv);
 				if(!srv.response.success) {
 					ROS_ERROR_STREAM_THROTTLE(1, "Invalid point requested. Terminating.\n");
 					send_next.shutdown();
 				}
-				inc++;
 			}
 			else {
 				ROS_ERROR_STREAM_THROTTLE(1, "End of the path reached.\n");
@@ -39,34 +42,26 @@ class TrajectoryTest {
 				
 	public:
 		TrajectoryTest() {
-			inc = 0;
-			POINTS = 3;
-			target_points[0][0] = 1.;
-			target_points[0][1] = 2.;
-			target_points[0][2] = -1.;
-			target_points[1][0] = 0.;
-			target_points[1][1] = 2.;
-			target_points[1][2] = -1.;
-			target_points[2][0] = -1.;
-			target_points[2][1] = 1.5;
-			target_points[2][2] = -2.;
+			std::string filename;
+			n.param<std::string>("filename", filename, "/data/data1");
+			std::fstream file;
+			filename = ros::package::getPath("anrobot") + filename;  
+			file.open(filename.c_str(), std::ios::in | std::ios::binary);
+			double coord;
+			while(file >> coord) 
+				q.push(coord);
+			if(q.size()%3 != 0)
+				return;
+			file.close();
 			send_next = n.advertiseService("trajectory_finished", &TrajectoryTest::send_next_cb, this);
 			next_point = n.serviceClient<anrobot::SetTarget>("set_end_target");
 		}
-			
-
-};
- 
-
-
-		
-	
+};	
 
 
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "trajectory_test");
 	TrajectoryTest t;
-
 	ros::spin();
 }
