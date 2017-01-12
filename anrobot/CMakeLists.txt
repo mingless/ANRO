@@ -163,6 +163,10 @@ add_executable(inv_kinematics src/inv_kinematics.cpp)
 target_link_libraries(inv_kinematics ${LIBS})
 add_dependencies(inv_kinematics ${anrobot_EXPORTED_TARGETS})
 
+add_executable(trajectory_test src/trajectory_test.cpp)
+target_link_libraries(trajectory_test ${LIBS})
+add_dependencies(trajectory_test ${anrobot_EXPORTED_TARGETS})
+
 add_executable(inv_gen_trajectory src/inv_gen_trajectory.cpp)
 target_link_libraries(inv_gen_trajectory ${LIBS})
 add_dependencies(inv_gen_trajectory ${anrobot_EXPORTED_TARGETS})

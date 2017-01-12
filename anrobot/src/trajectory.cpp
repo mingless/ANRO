@@ -133,7 +133,6 @@ InvTrajectory::InvTrajectory() {
 
     pub_end = n.advertise<geometry_msgs::Point>("end_trajectory", 1);
     pub_states = n.advertise<sensor_msgs::JointState>("trajectory_joint_states", 1);
-
     timer = n.createTimer(ros::Duration(4./200),
             &InvTrajectory::next_step, this, false, false);
 
@@ -142,6 +141,9 @@ InvTrajectory::InvTrajectory() {
 
     end_to_joints = n.serviceClient<anrobot::InvKinematics>(
             "inv_kinematics");
+
+    trajectory_finished = n.serviceClient<std_srvs::SetBool>(
+            "trajectory_finished");
 }
 
 void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
@@ -162,9 +164,9 @@ bool InvTrajectory::validate_reachability(geometry_msgs::PointConstPtr input) {
            x2 = end_target.x, y2 = end_target.y;
     double min_dist = 1.47363;
     double a1, a2, b1, xinter, yinter;
-    if((x2-x1)*(x2-x1)<=0.0001) {
-        xinter = x1;
-        yinter = 0;
+    if((y2-y1)*(y2-y1)<=0.0001) {
+        yinter = y1;
+        xinter = 0;
     }
     else {
         a1 = (y2-y1)/(x2-x1);
@@ -173,7 +175,7 @@ bool InvTrajectory::validate_reachability(geometry_msgs::PointConstPtr input) {
         xinter = -b1/(a1-a2);
         yinter = a2*xinter;
     }
-    if(yinter*yinter+xinter*xinter > min_dist) {
+    if(yinter*yinter+xinter*xinter > min_dist*min_dist) {
         return true;
     }
     if( (yinter < y1 && yinter < y2) || (yinter > y2 && yinter > y1)) {
@@ -182,6 +184,7 @@ bool InvTrajectory::validate_reachability(geometry_msgs::PointConstPtr input) {
     }
     ROS_ERROR_STREAM_THROTTLE(1, "Target " << x1 << " " << y1 << " " << input->z << " unreachable in straight line from current position.\n");
     publish_current();
+    announce_state(false);
     return false;
 }
 
@@ -224,6 +227,13 @@ void InvTrajectory::publish_current() {
         timer.stop();
     }
 }
+
+void InvTrajectory::announce_state(bool state) { //true when reached an end point of the trajectory, false when the trajectory was terminated
+    std_srvs::SetBool srv;
+    srv.request.data = state;
+    trajectory_finished.call(srv);
+}
+
 
 void InvTrajectory::target_states_cb(const geometry_msgs::PointConstPtr &msg)
 {
@@ -268,6 +278,7 @@ void InvTrajectory::next_step(const ros::TimerEvent& event) {
 
     if(inc > msg_amount) {
         timer.stop();
+        announce_state(true);
         return;
     }
 }
