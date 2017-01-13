@@ -2,12 +2,12 @@
     <arg name="model" default='$(find anrobot)/urdf/movable.urdf' />
     <arg name="gui" default="False" />
     <arg name="use_lin" default="True" />
-    <arg name="filename" default="/data/data1" />
+    <arg name="test" default="limits" />
 
     <param name="robot_description" textfile="$(arg model)" />
     <param name="use_gui" value="$(arg gui)"/>
     <param name="use_lin" value="$(arg use_lin)"/>
-    <param name="filename" value="$(arg filename)"/>
+    <rosparam command="load" file="$(find anrobot)/config/$(arg test)_test.yaml" />
 
     <node name="trajectory_test" pkg="anrobot" type="trajectory_test" />
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >

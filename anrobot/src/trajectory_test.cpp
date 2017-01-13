@@ -11,48 +11,45 @@ class TrajectoryTest {
 		ros::NodeHandle n;
 		ros::ServiceServer send_next;
 		ros::ServiceClient next_point;
-		std::queue<double> q;
+		std::vector<double> points;
 
 		bool send_next_cb(std_srvs::SetBool::Request &request,
                           std_srvs::SetBool::Response &response) {
 			if(!request.data) {
 				ROS_ERROR_STREAM_THROTTLE(3, "Invalid point requested. Terminating.\n");
 				send_next.shutdown();
+                return false;
 			}
-			else if(!q.empty()) {
+			else if(!points.empty()) {
 				anrobot::SetTarget srv;
-				srv.request.point.x = q.front();
-				q.pop();
-				srv.request.point.y = q.front();
-				q.pop();
-				srv.request.point.z = q.front();
-				q.pop();
+				srv.request.point.x = points.at(0);
+				srv.request.point.y = points.at(1);
+				srv.request.point.z = points.at(2);
+				points.erase(points.begin(), points.begin()+3);
 				next_point.call(srv);
 				if(!srv.response.success) {
 					ROS_ERROR_STREAM_THROTTLE(3, "Invalid point requested. Terminating.\n");
 					send_next.shutdown();
+                    return false;
 				}
+                return true;
 			}
 			else {
-				ROS_ERROR_STREAM_THROTTLE(3, "End of the path reached.\n");
+				ROS_INFO_STREAM_THROTTLE(3, "End of the path reached.\n");
 				send_next.shutdown();
-			}
-
+                return false;
+		    }
 		}
 
 	public:
 		TrajectoryTest() {
-			std::string filename;
-			n.param<std::string>("filename", filename, "/data/data1");
-			std::fstream file;
-			filename = ros::package::getPath("anrobot") + filename;
-			file.open(filename.c_str(), std::ios::in | std::ios::binary);
-			double coord;
-			while(file >> coord)
-				q.push(coord);
-			if(q.size()%3 != 0)
+            if(!n.hasParam("points")) {
+                ROS_ERROR_STREAM("Failed to retrieve target points. Shutting down.");
+                return;
+            }
+			n.getParam("points", points);
+			if(points.size()%3 != 0)
 				return;
-			file.close();
 			send_next = n.advertiseService("trajectory_finished",
                                             &TrajectoryTest::send_next_cb,
                                             this);

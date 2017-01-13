@@ -26,7 +26,7 @@ bool Trajectory::compare_target(sensor_msgs::JointStateConstPtr input) {
 };
 
 void Trajectory::init(sensor_msgs::JointStateConstPtr msg) {
-    msg_amount = 300;
+    n.param("inter_steps", msg_amount, 300);
     inc = 0;
     _is_init = 1;
     current = *msg;
@@ -145,18 +145,24 @@ InvTrajectory::InvTrajectory() {
             "inv_kinematics");
 }
 
-void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
-    msg_amount = 300;
+void InvTrajectory::init() {
+    n.param("inter_steps", msg_amount, 300);
     inc = 0;
     anrobot::InvKinematics srv;
-    srv.request.point = *msg;
+    double x, y, z;
+    n.param("init_point/x", x, 1.);
+    n.param("init_point/y", y, 2.);
+    n.param("init_point/z", z, -1.);
+    srv.request.point.x = x;
+    srv.request.point.y = y;
+    srv.request.point.z = z;
     if(end_to_joints.call(srv)) {
         _is_init = 1;
-        end_current = *msg;
+        end_current = srv.request.point;
         end_initial = end_current;
         end_target = end_current;
     }
-    announce_state(true); 
+    announce_state(true);
 }
 
 //This function checks whether the line segment created by (x,y) coords of input and end_target pass through
@@ -245,7 +251,7 @@ void InvTrajectory::announce_state(bool state) { //true when reached an end poin
 void InvTrajectory::target_states_cb(const geometry_msgs::PointConstPtr &msg)
 {
     if (!is_init()) {
-        init(msg);
+        init();
     }
     if (compare_target(msg) && validate_reachability(msg)) {
         init_inter(msg);

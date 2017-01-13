@@ -55,7 +55,7 @@ class InvTrajectory : public Trajectory{
         InvTrajectory();
         ~InvTrajectory(){};
 
-        void init(geometry_msgs::PointConstPtr msg);
+        void init();
 
         bool compare_target(geometry_msgs::PointConstPtr input);
         bool validate_reachability(geometry_msgs::PointConstPtr input);
