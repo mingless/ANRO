@@ -47,7 +47,7 @@ class InvTrajectory : public Trajectory{
     protected:
         ros::Publisher pub_end, pub_states;
         ros::ServiceClient end_to_joints;
-	ros::ServiceClient trajectory_finished;
+        ros::ServiceClient trajectory_finished;
 
         geometry_msgs::Point end_target, end_current, end_initial;
 
@@ -61,7 +61,7 @@ class InvTrajectory : public Trajectory{
         bool validate_reachability(geometry_msgs::PointConstPtr input);
 	    void target_states_cb(const geometry_msgs::PointConstPtr &msg);
         virtual void publish_current();
-	void announce_state(bool state);
+        void announce_state(bool state);
 
         void init_inter(geometry_msgs::PointConstPtr msg);
         void init_lin(geometry_msgs::PointConstPtr msg);

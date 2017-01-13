@@ -194,9 +194,11 @@ target_link_libraries(trajectory_marker_pub ${LIBS})
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory inv_gen_trajectory inv_kinematics trajectory_marker_pub
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+install(
+    TARGETS dh_to_urdf simple_fwd_kinematics kdl_fwd_kinematics set_param gen_trajectory
+            inv_gen_trajectory inv_kinematics trajectory_marker_pub trajectory_test
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    )
 
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/
