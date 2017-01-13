@@ -135,15 +135,14 @@ InvTrajectory::InvTrajectory() {
     pub_states = n.advertise<sensor_msgs::JointState>("trajectory_joint_states", 1);
     timer = n.createTimer(ros::Duration(4./200),
             &InvTrajectory::next_step, this, false, false);
+    trajectory_finished = n.serviceClient<std_srvs::SetBool>(
+            "trajectory_finished");
 
     get_target = n.subscribe<geometry_msgs::Point>(
             "target_end", 100, &InvTrajectory::target_states_cb, this);
 
     end_to_joints = n.serviceClient<anrobot::InvKinematics>(
             "inv_kinematics");
-
-    trajectory_finished = n.serviceClient<std_srvs::SetBool>(
-            "trajectory_finished");
 }
 
 void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
@@ -157,30 +156,38 @@ void InvTrajectory::init(geometry_msgs::PointConstPtr msg) {
         end_initial = end_current;
         end_target = end_current;
     }
+    announce_state(true); 
 }
+
+//This function checks whether the line segment created by (x,y) coords of input and end_target pass through
+//a circle defined by robot's reachability. If they do, we can't reach it in straight line.
 
 bool InvTrajectory::validate_reachability(geometry_msgs::PointConstPtr input) {
     double x1 = input->x, y1 = input->y,
            x2 = end_target.x, y2 = end_target.y;
-    double min_dist = 1.47363;
+    double min_dist = 1.47363;     //minimum radius from the base_link that our arm can reach in XY plane: sqrt(a^2+b^2-2abcos(45))
     double a1, a2, b1, xinter, yinter;
-    if((y2-y1)*(y2-y1)<=0.0001) {
+    if((y2-y1)*(y2-y1)<=0.0001) {  //safety in the case of linear function being parallel to any of the axes
         yinter = y1;
         xinter = 0;
     }
+    else if((x2-x1)*(x2-x1)<=0.0001) {
+        yinter = 0;
+        xinter = x1;
+    }
     else {
         a1 = (y2-y1)/(x2-x1);
-        a2 = -1./a1;
-        b1 = y1 - a1*x1;
+        a2 = -1./a1;               //line equations: passing through the points above, and a line perpendicular to it
+        b1 = y1 - a1*x1;           //and passing through the circle center at (0,0)
         xinter = -b1/(a1-a2);
-        yinter = a2*xinter;
-    }
+        yinter = a2*xinter;        //intersection point between these two lines. It's the closest point from our base
+    }                              //line to the circle's center
     if(yinter*yinter+xinter*xinter > min_dist*min_dist) {
-        return true;
-    }
-    if( (yinter < y1 && yinter < y2) || (yinter > y2 && yinter > y1)) {
-        if(fmin((x1*x1+y1*y1), (x2*x2+y2*y2)) > min_dist*min_dist)
-            return true;
+        return true;		   //distance of the intersection point from (0,0). If higher than min_dist, the segment
+    }                              //doesn't pass through it for sure
+    if( (yinter < y1 && yinter < y2) || (yinter > y2 && yinter > y1)) { //check whether the intersection points lines on the segment
+        if(fmin((x1*x1+y1*y1), (x2*x2+y2*y2)) > min_dist*min_dist)  //if it doesn't: check the distance from (0,0)
+            return true;           //of the end point closer to the center. If it's higher than min_dist, everything's fine.
     }
     ROS_ERROR_STREAM_THROTTLE(1, "Target " << x1 << " " << y1 << " " << input->z << " unreachable in straight line from current position.\n");
     publish_current();
